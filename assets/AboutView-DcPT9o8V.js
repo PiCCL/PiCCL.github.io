@@ -1,1 +1,0 @@
-import{d as o,h as t,f as a,o as n}from"./index-DREuIEeJ.js";const l=o({__name:"AboutView",props:{example:{}},setup(r){return(s,e)=>(n(),t("div",null,e[0]||(e[0]=[a("h1",null,"about",-1)])))}});export{l as default};
