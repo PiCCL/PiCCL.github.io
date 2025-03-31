@@ -1,0 +1,15 @@
+const cash = new PICCL.Picture({ url: "cash.png", width: 100, height: 100 })
+const cashStack = PICCL.repeat(cash, "amount")
+  .stackLayout("y", -70)
+  .mapValue("x", "category")
+const label = new PICCL.Text({ fontSize: 30, textAnchor: "middle", fontWeight: "bold" })
+  .mapValue("content", "amount")
+const glyph = PICCL.union([cashStack, label])
+  .pointSnap(label, cashStack, { anchor: [0.5, 1] })
+
+const collection = PICCL.replicate(glyph)
+const xAxis = new PICCL.Axis("x", { showTickLine: false });
+
+const chart = PICCL.union([collection, xAxis])
+
+await PICCL.show([[chart, data["data.csv"]]], container, {pictures})

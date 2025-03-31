@@ -1,0 +1,58 @@
+function createFlower() {
+    const petal = new PICCL.Picture({ url: "petal3.png", height: 50, colorMode: "hue"})
+        .mapValue("height", "OECD_index")
+        .mapValue("color", "OECD_field");
+
+    const flower = PICCL.replicate(petal)
+        .circularLayout();
+    return flower;
+}
+
+const xScale = new PICCL.LinearScale({ range: [0, 650] });
+const yScale = new PICCL.LinearScale({ range: [200, 500] });
+const sizeScale = new PICCL.SquareRootScale();
+const rose = createFlower();
+// const rose = new PICCL.Picture({ url: "rose.svg", width: 150, opacity: 1, colorMode: "darkness" })
+//     .mapValue("width", "GDP", { scale: sizeScale })
+//     .mapValue("color", "DEMV", { palette: "yelloworangered" })
+const center = new PICCL.Point()
+    .mapValue("x", "DESI2022", { scale: xScale })
+    .mapValue("y", "DEMV", { scale: yScale })
+
+const bottom = new PICCL.Point()
+    .mapValue("x", "DESI2017", { scale: xScale })
+
+const text = new PICCL.Text({ textAnchor: "middle", fill: "#000", fontSize: 10 })
+    .mapValue("content", "country")
+
+const glyph = PICCL.union([center, bottom, rose, text])
+    .pointSnap(rose, center)
+    .pointSnap(text, rose, { anchor: [0.5, 1] })
+
+const link = PICCL.link(glyph, { filter: "point", srcDirection: "bottom", dstDirection: "top", shape: "bezier", curveness: 150, opacity: 0.3, strokeWidth: 2 })
+
+const collection = PICCL.replicate(link, "country")
+    .sort("GDP", true);
+
+const xAxis = new PICCL.Axis("x");
+const yAxis = new PICCL.Axis("y", { position: 700, tickPosition: "right" });
+const chart = PICCL.union([collection, xAxis, yAxis])
+
+const title = new PICCL.Text({ content: "GDP and Digital Economy\nMarket Value in Europe:", x: -150, y: 540, fontSize: 40, fill: "rgb(183,29,62)", fontWeight: "bold" })
+const subtitle = new PICCL.Text({ content: "DESI INDEX PROGRESS", x: -150, y: 440, fontSize: 30 })
+
+const para = `This chart compares Gross Domestic Product (GDP),
+digital economy market value, and Digital Economy and
+Society index (DESl) Index scores for 2017 and 2022
+across multiple European countries. Denmark and Finland,
+who lead in DESl scores in 2022, have considerable
+digital economy values of 22.8 billion USD and 6.57 
+billion USD, respectively. Higher DESl scores are 
+frequently correlated with stronger digital economies, 
+as evidenced in countries such as the Netherlands 
+and Sweden. This correlation emphasizes the relevance 
+of digital innovation and infrastructure in increasing 
+the value of a country's digital markets.`
+
+const paraobj = new PICCL.Text({content: para, x: -150, y: 390})
+await PICCL.show([[chart, data["flower_data.csv"]], title, subtitle, paraobj], container, { pictures })

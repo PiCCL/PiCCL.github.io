@@ -1,0 +1,22 @@
+const renderChart = async (titleStr, dataName) => {
+    const circle = new PICCL.Circle({ r: 400, fill: "white" });
+    const [pieChart, arc] = PICCL.divide(circle, "angular", { key: "type", sizeEncode: "amount" });
+    const fruit = new PICCL.Picture()
+        .mapValue("url", "url");
+    const pie = PICCL.intersect(fruit, arc)
+        .pointSnap(fruit, arc, { sourceAnchor: "middle", targetAnchor: [0, 0] })
+        .lengthMatch(fruit, arc, { sourceChannel: "width", targetChannel: "diameter" });
+    const annotation = new PICCL.Text({ fontSize: 28, textAnchor: "middle", fontWeight: "bold", fill: "black" })
+        .mapValue("content", "type");
+    const annotated_pie = PICCL.union([pie, annotation])
+        .pointSnap(annotation, pie, { targetAnchor: [0.5, 1.2] })
+
+    const title = new PICCL.Text({ y: 550, content: titleStr, fontSize: 80, fontFamily: "arial", fontWeight: "bold", textAnchor: "middle" });
+    await PICCL.show([
+        [pieChart, data[dataName]],
+        title
+    ], container, { pictures, padding: 150 });
+}
+
+await renderChart("Favorite types of pies", "data.csv(2)")
+// await renderChart("My favorite fruits", "data.csv")

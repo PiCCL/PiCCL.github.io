@@ -1,0 +1,15 @@
+const body = new PICCL.Picture({ url: "body.png" });
+const arm = new PICCL.Picture({ url: "arm.png" })
+    .mapValue("width", "amount")
+    .fix("height", 74)
+    .fix("angle", -70);
+
+const hook = new PICCL.Picture({ url: "hook.png" });
+const crane = PICCL.union([body, arm, hook])
+  .pointSnap(arm, body, { sourceAnchor: [0, 0.5], targetAnchor: [0.95, 0.5] })
+  .pointSnap(hook, arm, { sourceAnchor: [0.5, 1], targetAnchor: [1, 0.5] })
+  .mapValue("x", "category")
+
+const collection = PICCL.replicate(crane);
+
+await PICCL.show([[collection, data["data.csv"]]], container, {pictures});

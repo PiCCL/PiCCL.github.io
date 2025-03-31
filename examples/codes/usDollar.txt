@@ -1,0 +1,36 @@
+const width = 700;
+const height = width / 2;
+const line = new PICCL.Line({ x1: width, y1: 0, x2: width, y2: height, stroke: "white" })
+    .mapValue("x", "year")
+    .mapValue("length", "purchasing_power");
+const lines = PICCL.replicate(line);
+const area = PICCL.link(lines);
+const usd = new PICCL.Picture({ url: "dollar2.jpg" });
+const areaWithUsd = PICCL.intersect(area, usd)
+    .lengthMatch(usd, area, { channel: "height" })
+    .shadowEffect(-5, -5, 0, "rgb(44,90,126)");
+const point = new PICCL.Point({ x: width, y: height })
+    .mapValue("x", "year")
+    .mapValue("y", "purchasing_power");
+const annotation = new PICCL.Text({ fill: "rgb(59,44,36)", fontWeight: "400", fontSize: 13 })
+    .mapValue("content", "annotation");
+const slash = new PICCL.Line({ x2: 20, y2: 30 })
+    .mapValue("visibility", "has_annotation");
+const annotatedPoint = PICCL.union([point, slash, annotation])
+    .pointSnap(slash, point, { anchor: 0 })
+    .pointSnap(annotation, slash, { anchor: 1 });
+const points = PICCL.replicate(annotatedPoint);
+const polyline = PICCL.link(points, { filter: "point", strokeWidth: 4, stroke: "rgb(44,90,126)", overlay: "front" });
+const yAxis = new PICCL.Axis("y", { numberTicks: 13, position: -20, showTickLine: false, showBaseline: false });
+const xAxis = new PICCL.Axis("x", { fontSize: 24, numberTicks: 11, position: -20, showTickLine: false, showBaseline: false });
+const chart = PICCL.union([areaWithUsd, polyline, yAxis, xAxis]);
+const title = new PICCL.Text({ content: "Purchasing Power of U.S. Dollar (1913 - 2010)", x: 115, y: 420, fontSize: 20, fontWeight: "1000", fill: "rgb(59,44,36)" })
+    .shadowEffect(0, 0, 1, "black");
+const subtitle = new PICCL.Text({ content: "From 1913 to 2010", x: 700, y: 590, fontSize: 40, fill: "#7e856f" });
+const padding = 20;
+const rect = new PICCL.Rect({ x: -padding, y: -padding, width: width + padding * 2, height: height + padding * 3.4, fill: "black", opacity: 0.15 });
+await PICCL.show([
+    rect,
+    [chart, data["purchasing_power_of_us_dollor.csv"]],
+    title,
+], container, { pictures, background: "rgb(194,205,197)", padding: [50, 50, 50, 50] });

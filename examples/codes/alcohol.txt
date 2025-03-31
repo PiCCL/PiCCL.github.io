@@ -1,0 +1,28 @@
+const rect = new PICCL.Rect({ height: 220, fill: "rgb(97,16,48)", stroke: "white", strokeWidth: 1 })
+const [collection, part] = PICCL.divide(rect, "y", { sizeEncode: "consumption2" });
+
+const amountLabel = new PICCL.Text({ fill: "white", fontSize: 10, textAnchor: "middle" })
+    .mapValue("content", "consumption");
+const countryLabel = new PICCL.Text({ fill: "black", fontSize: 8, fontWeight: "bold" })
+    .mapValue("content", "country");
+
+PICCL.union([part, amountLabel, countryLabel])
+    .pointSnap(amountLabel, part, { anchor: "middle", offset: [0, -4] })
+    .pointSnap(countryLabel, part, { anchor: ["right", "middle"], offset: [10, -4] })
+
+const bottleShape = new PICCL.Picture({ url: "bottle_shape.png" })
+const bottle = PICCL.intersect(bottleShape, collection, "normal", [countryLabel])
+    .lineSnap(collection, bottleShape, "y", { anchor: "bottom" })
+    .lengthMatch(collection, bottleShape, { channel: "width" })
+
+const bottleBorder = new PICCL.Picture({ url: "bottle_border.png" })
+const bottleWithBorder = PICCL.union([bottle, bottleBorder])
+
+const title = new PICCL.Text({ fill: "white", fontSize: 50, y: 650, fontWeight: "bold", content: "Alcohol" })
+const subtitle = new PICCL.Text({ fontSize: 24, fontWeight: "bold", y: 620, content: "Consumption \n per capita (liters)" })
+
+await PICCL.show([
+    [bottleWithBorder, data["data.csv"]],
+    title,
+    subtitle
+], container, { background: "rgb(236,174,169)", padding: [100, 200, 50, 50], pictures })

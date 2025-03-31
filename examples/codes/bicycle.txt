@@ -1,0 +1,34 @@
+const createLegend = (field: string, x: number, y: number) => {
+    const rect = new PICCL.Rect({ width: 40, height: 40, x, y })
+        .mapValue("fill", field,);
+    const label = new PICCL.Text({ fontSize: 24 })
+        .mapValue("content", field)
+    const item = PICCL.union([rect, label])
+        .pointSnap(label, rect, { anchor: [1, 0.5], offset: [10, -8] })
+    const legend = PICCL.replicate(item, field)
+        .stackLayout("x", 150)
+    return legend;
+}
+
+const makePie = (channel1: string, channel2: string, labelContent: string) => {
+    const circle = new PICCL.Circle({ r: 150, innerRadius: 100, stroke: "white", strokeWidth: 1 })
+    const [pieChart, arc] = PICCL.divide(circle, "angular", { key: channel1, sizeEncode: channel2 })
+        arc.mapValue("fill", channel1, { palette: "tableau10" });
+    const label = new PICCL.Text({ content: labelContent, textAnchor: "middle", fontSize: 24 });
+    const glyph = PICCL.union([pieChart, label])
+        .pointSnap(label, pieChart, { anchor: [0.5, 0], offset: [0, -50] })
+    return glyph
+}
+
+const pie2021 = makePie("type", "percentage2021", "2021")
+const pie2031 = makePie("type", "percentage2031", "2031")
+const bicycle = new PICCL.Picture({ url: "bicycle.jpg", width: 800 })
+const legend = createLegend("type", 0, -80);
+
+const chart = PICCL.union([bicycle, pie2021, pie2031, legend])
+    .pointSnap(pie2021, bicycle, { sourceAnchor: [0.5, 1], targetAnchor: [0.211, 0.644] })
+    .pointSnap(pie2031, bicycle, { sourceAnchor: [0.5, 1], targetAnchor: [0.785, 0.644] })
+
+const title = new PICCL.Text({ content: "Bicycle Market Outlook, by Type", fontSize: 30, fontWeight: "bold", y: 540 })
+
+await PICCL.show([[chart, data["data.csv"]], title], container, {pictures})

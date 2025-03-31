@@ -1,0 +1,43 @@
+const createLegend = (field, x, y) => {
+    const rect = new PICCL.Rect({ width: 50, height: 20, x, y })
+        .mapValue("fill", field);
+    const label = new PICCL.Text({ fontSize: 20 })
+        .mapValue("content", field);
+    const item = PICCL.union([rect, label])
+        .pointSnap(label, rect, { anchor: [1, 0.5], offset: [30, -9] });
+    const legend = PICCL.replicate(item, field)
+        .stackLayout("y", 20);
+    return legend;
+};
+const palette = [
+    "rgb(160,204,220)",
+    "rgb(133,187,215)",
+    "rgb(116,173,214)",
+    "rgb(99,155,216)",
+    "rgb(100,93,197)",
+    "rgb(99,73,174)",
+    "rgb(95,54,146)",
+];
+const xScale = new PICCL.CategoricalScale({ range: [0, 800] });
+const yScale = new PICCL.LinearScale({ domain: [0, 10], range: [0, 600] });
+const line = new PICCL.Line({ x1: 0, x2: 0, y1: 0, y2: -100 })
+    .mapValue("stroke", "type", { palette })
+    .mapValue("length", "value", { scale: yScale })
+    .mapValue("linkId", "type");
+const column = PICCL.replicate(line, "type").stackLayout("-y", 0).mapValue("x", "year", { scale: xScale });
+const lines = PICCL.replicate(column, "year");
+const area = PICCL.link(lines, { filter: "line" });
+const picture = new PICCL.Picture({ url: "ice_mountain.jpg", y: -600, width: 800, color: "rgb(26, 78, 110)", colorMode: "darkness", opacity: 0.5 })
+    .edgeBlurEffect(10);
+const legend = createLegend("type", 0, -600);
+const xAxis = new PICCL.Axis("x", { position: 0, tickPosition: "top", showBaseline: false, scale: xScale, numberTicks: 5 });
+const yAxis = new PICCL.Axis("-y", { position: 800, tickPosition: "right", scale: yScale, numberTicks: 6 });
+const title = new PICCL.Text({ content: "Visualizing the", fontSize: 25, y: 90 });
+const title2 = new PICCL.Text({ content: "GREAT ICE MELTDOWN", fontSize: 40, y: 50, fontFamily: "Bahnschrift SemiBold" });
+const chart = PICCL.union([picture, area, xAxis, yAxis, legend]);
+PICCL.show([[chart, data], title, title2], container, { background: "#d1e6f3" });
+await PICCL.show([
+    [chart, data["iceberg.csv"]],
+    title,
+    title2
+], container, { background: "#d1e6f3", pictures });

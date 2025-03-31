@@ -1,0 +1,13 @@
+const cucumber = new PICCL.Picture({ url: "cucumber.png", height: 600 });
+const [collection, part] = PICCL.divide(cucumber, "y", { key: "category", sizeEncode: "amount", gap: 0.2 })
+part.shadowEffect(-10, -10, 10);
+const label = new PICCL.Text({ fontSize: 20, fontWeight: "bold" })
+    .mapValue("content", "category");
+const label2 = new PICCL.Text({ fontSize: 50, fontFamily: "Impact", textAnchor: "middle", fill: "white" })
+    .mapValue("content", "amount");
+PICCL.union([part, label, label2])
+    .pointSnap(label, part, { anchor: [1, 0.5], offset: [0, -20] })
+    .pointSnap(label2, part, { anchor: [0.5, 0.5], offset: [0, -20] });
+await PICCL.show([
+    [collection, data["data.csv"]]
+], container, { padding: [100, 600, 100, 100], pictures });

@@ -1,0 +1,31 @@
+const createRadarChart = (channel1: string, channel2: string, domain: [number, number]) => {
+    const scale = new PICCL.LinearScale({ domain });
+    const line = new PICCL.Line({ x2: 0, y2: 200, stroke: "white" });
+    const point = new PICCL.Point({ y: 200, fill: "white" })
+        .mapValue("y", channel2, { scale: scale });
+    const label = new PICCL.Text({ y: 210, textAnchor: "middle", fill: "white" })
+        .mapValue("content", channel1);
+    const glyph = PICCL.union([line, point, label]);
+    const collection = PICCL.replicate(glyph)
+        .circularLayout();
+    const link = PICCL.link(collection, { filter: point, fill: "rgb(161,211,182)", stroke: "none" });
+    const background = new PICCL.Circle({ r: 200, stroke: "white", strokeWidth: 2, fill: "rgb(41,50,76)" });
+    const grid1 = new PICCL.Circle({ r: 200, innerRadius: 150, fill: "none", stroke: "white", strokeWidth: 1 });
+    const grid2 = new PICCL.Circle({ r: 100, innerRadius: 50, fill: "none", stroke: "white", strokeWidth: 1 });
+    const axis = new PICCL.Axis("y", { color: "white", numberTicks: 5 });
+    const chart = PICCL.union([background, link, grid1, grid2, axis]);
+    return chart;
+};
+const bicycleCounts = createRadarChart("month", "count", [0, 2]);
+const rainfall = createRadarChart("month", "rainfall", [0, 120]);
+const bicycleFrame = new PICCL.Picture({ url: "bicycle_frame.png", width: 600 });
+const title1 = new PICCL.Text({ content: "Monthly Bicycle Counts", fontSize: 30, fill: "rgb(161,211,182)", textAnchor: "start" });
+const title2 = new PICCL.Text({ content: "Rainfall in 2014", fontSize: 30, fill: "rgb(161,211,182)", textAnchor: "end" });
+const chart = PICCL.union([bicycleFrame, bicycleCounts, rainfall, title1, title2])
+    .pointSnap(bicycleCounts, bicycleFrame, { sourceAnchor: [0.5, 0.5], targetAnchor: [0, 0], offset: [-40, -120] })
+    .pointSnap(rainfall, bicycleFrame, { sourceAnchor: [0.5, 0.5], targetAnchor: [1, 0], offset: [0, -120] })
+    .pointSnap(title1, bicycleFrame, { targetAnchor: [0, 1], offset: [-300, -40] })
+    .pointSnap(title2, bicycleFrame, { targetAnchor: [1, 1], offset: [300, -40] });
+await PICCL.show([
+    [chart, data["data.csv"]]
+], container, { background: "rgb(41,50,76)", pictures });

@@ -1,0 +1,17 @@
+const rect = new PICCL.Rect({ width: 40, height: 200 })
+\n  .mapValue("height", "Count")
+\n  .mapValue("fill", "Medal_Type", { palette: ["#c9b037", "#d7d7d7", "#ad8a56"] });
+\nconst stack = PICCL.replicate(rect, "Medal_Type")
+\n  .stackLayout("y", 0)
+\n  .mapValue("x", "Country_Code");
+\nconst stacks = PICCL.replicate(stack, "Country_Code")
+\n
+\nconst xAxis = new PICCL.Axis("x", { position: -10, numberTicks: 20 });
+\nconst yAxis = new PICCL.Axis("y", { position: -20 });
+\n
+\nconst chart = PICCL.union([stacks, xAxis, yAxis])
+\n
+\nawait PICCL.show([
+\n  [chart, data["data.csv"]]
+\n], container, {})
+\n

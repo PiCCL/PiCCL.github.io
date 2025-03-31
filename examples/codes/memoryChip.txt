@@ -1,0 +1,28 @@
+const bar = new PICCL.Rect({ width: 230, height: 500, fill: "white" })
+    .mapValue("height", "amount");
+const ram = new PICCL.Picture({ url: "ram-vectorstock-com.jpg" });
+const glyph = PICCL.intersect(bar, ram)
+    .lineSnap(ram, bar, "x")
+    .lineSnap(ram, bar, "y", { anchor: "top" })
+    .lengthMatch(ram, bar, { channel: "width" });
+const label = new PICCL.Text({ textAnchor: "start", fontSize: 30, fontFamily: "Georgia" })
+    .mapValue("content", "category");
+const annotation = new PICCL.Text({ textAnchor: "start", prefix: "$", suffix: "bn", fontSize: 50, fill: "rgb(217,80,16)", fontFamily: "Georgia" })
+    .mapValue("content", "amount");
+const barWithLabel = PICCL.union([glyph, label, annotation])
+    .pointSnap(label, glyph, { anchor: [0.1, 0], offset: [0, -40] })
+    .pointSnap(annotation, glyph, { anchor: [0, 1], offset: [0, 20] })
+    .mapValue("x", "category");
+const collection = PICCL.replicate(barWithLabel);
+const titleBackground = new PICCL.Rect({ x: -150, y: 300, width: 440, height: 400, fill: "rgb(217,80,16)" });
+const title = new PICCL.Text({ fontSize: 80, fill: "white", content: "US\nspending", fontFamily: "Georgia" });
+const subtitle = new PICCL.Text({ fontSize: 30, fill: "white", content: "Intelligence services\nrequested a budget of\n$52.6bn, outlining\nkey areas of spending", fontFamily: "Georgia" });
+const titleBox = PICCL.union([titleBackground, title, subtitle])
+    .pointSnap(title, titleBackground, { anchor: [0, 0.3] })
+    .pointSnap(subtitle, titleBackground, { anchor: [0, 0.9] });
+await PICCL.show([
+    [collection, data["data.csv"]],
+    titleBackground,
+    title,
+    subtitle
+], container, { background: "rgb(214,218,219)", padding: [0, 30, 100, 0], pictures });

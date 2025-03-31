@@ -1,0 +1,31 @@
+const data1 = [
+    { category: "a", amount: 30 },
+    { category: "d", amount: 60 },
+    { category: "b", amount: 75 },
+    { category: "c", amount: 100 },
+];
+
+const createChart = (pictureUrl: string, refillColor: string) => {
+    const scale = new PICCL.LinearScale({ range: [0, 400] });
+    const pic = new PICCL.Picture({ url: pictureUrl, height: 400, color: "#fff" });
+    const rect = new PICCL.Rect({ height: 400, fill: refillColor })
+        .mapValue("height", "amount", { scale });
+    const recoloredPic = PICCL.atop(pic, rect, "luminosity")
+        .lengthMatch(rect, pic, { channel: "width" });
+    const line = new PICCL.Line({ x1: 0, y1: 0, x2: 250, y2: 0 })
+        .mapValue("y", "amount", { scale });
+    const label = new PICCL.Text({ fontSize: 36, fill: "#666", textAnchor: "end", suffix: "%" })
+        .mapValue("content", "amount");
+    const glyph = PICCL.union([recoloredPic, line, label])
+        .pointSnap(label, line, { anchor: [1, 0] });
+    const collection = PICCL.replicate(glyph)
+        .stackLayout("x", 10);
+    return collection
+}
+
+// const chart = createChart("shrimp5.png", "#ff6600")
+const chart = createChart("bottle.png", "#00ff00")
+
+await PICCL.show([
+    [chart, data1]
+], container, { pictures });

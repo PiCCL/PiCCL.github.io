@@ -1,0 +1,14 @@
+const shape = new PICCL.Picture({ url: "human_shape.png" });
+const border = new PICCL.Picture({ url: "human_border.png" });
+const water = new PICCL.Rect({ fill: "skyblue", height: 450 })
+    .mapValue("height", "amount");
+const g1 = PICCL.intersect(shape, water)
+    .lineSnap(water, shape, "x")
+    .lengthMatch(water, shape, { channel: "width" });
+const g2 = PICCL.union([g1, border])
+    .lineSnap(border, g1, "x")
+    .mapValue("x", "category");
+const collection = PICCL.replicate(g2);
+await PICCL.show([
+    [collection, data["data.csv"]]
+], container, { pictures });

@@ -1,0 +1,37 @@
+const createLegend = (field, x, y) => {
+    const height = 50;
+    const background = new PICCL.Rect({ width: 300, height, x, y, fill: "white" });
+    const rect = new PICCL.Rect({ width: 50, height, x, y })
+        .mapValue("fill", field);
+    const label = new PICCL.Text({ fontSize: 16, textAnchor: "middle", fontWeight: "bold", fill: "#333" })
+        .mapValue("content", field);
+    const item = PICCL.union([background, rect, label])
+        .pointSnap(label, rect, { anchor: [1, 1], offset: [125, -20] });
+    const legend = PICCL.replicate(item, field)
+        .gridLayout("tdlr", 3, 80, 350)
+        .shadowEffect(-10, -10, 10, "black");
+    return legend;
+};
+const palette = [
+    "rgb(4,20,43)",
+    "rgb(27,71,126)",
+    "rgb(118,188,213)",
+    "rgb(163,174,184)",
+    "rgb(239,208,69)",
+    "rgb(176,63,26)",
+];
+const circle = new PICCL.Circle({ r: 300, innerRadius: 180 });
+const [pieChart, arc] = PICCL.divide(circle, "angular", { sizeEncode: "duration" })
+arc.mapValue("fill", "type", { palette });
+const clockArms = new PICCL.Picture({ url: "clockArms.png", width: 800 })
+    .shadowEffect(-10, -10, 10, "black");
+const clockPlate = new PICCL.Picture({ url: "clockPlate.png", width: 750 })
+    .shadowEffect(-10, -10, 10, "black");
+const clock = PICCL.union([clockPlate, pieChart, clockArms])
+    .pointSnap(pieChart, clockArms, { anchor: "middle" })
+    .pointSnap(clockArms, clockPlate, { anchor: "middle" });
+const legend = createLegend("type", 50, -100);
+await PICCL.show([
+    [clock, data["data.csv"]],
+    [legend, data["data.csv"]]
+], container, { background: "rgb(62,152,202)", padding: 100, pictures });

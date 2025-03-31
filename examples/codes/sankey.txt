@@ -1,0 +1,24 @@
+const rect = new PICCL.Rect({ width: 100, height: 1000, stroke: "white", strokeWidth: 2 })
+  .mapValue("height", "Value")
+  .mapValue("linkId", "id")
+  .mapValue("fill", "Value");
+
+const label = new PICCL.Text({ fill: "white", fontSize: 20 })
+  .mapValue("content", "Name");
+
+const glyph = PICCL.union([rect, label])
+  .pointSnap(label, rect, { anchor: [1, 0.5], offset: [10, -7] });
+
+const stack = PICCL.replicate(glyph, "Name")
+  .stackLayout("y", 6);
+
+const collection = PICCL.replicate(stack, "Kind")
+  .stackLayout("x", 500)
+  .alignLayout("y", 0.5);
+
+const link = PICCL.link(collection, { linkByData: true, filter: rect, opacity: 0.5, shape: "bezier", curveness: 100 })
+  .mapValue("linkWidth", "Value")
+  .mapValue("fill", "Value");
+
+await PICCL.show([[link, data["links.csv"]], [collection, data["nodes.csv"]]], container, { padding: 200, background: "black" });
+

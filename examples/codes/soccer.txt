@@ -1,0 +1,53 @@
+const palette1 = [
+    "rgb(224,186,79)",
+    "rgb(52,52,52)",
+    "rgb(223,223,223)",
+    "rgb(38,156,204)",
+    "rgb(6,66,120)",
+    "rgb(141,195,223)",
+    "rgb(231,231,231)",
+    "rgb(135,27,24)",
+];
+const palette2 = [
+    "rgb(23,93,31)",
+    "rgb(224,186,79)",
+    "rgb(38,156,204)",
+    "rgb(223,223,223)",
+    "rgb(223,223,223)",
+    "rgb(6,66,120)",
+    "rgb(135,27,24)",
+    "rgb(224,186,79)",
+];
+const rect = new PICCL.Rect({ width: 200, height: 150 })
+    .mapValue("fill", "country", { palette: palette1 });
+const star = new PICCL.Picture({ url: "star.png", width: 50, colorMode: "darkness" })
+    .mapValue("color", "country", { palette: palette2 });
+const glyph = PICCL.union([rect, star])
+    .pointSnap(star, rect);
+const col = PICCL.repeat(glyph, "count")
+    .stackLayout("y", 0);
+const cup = new PICCL.Picture({ url: "cup.png", width: 140 })
+    .mapValue("visibility", "best")
+    .shadowEffect(0, -20, 5);
+const logo = new PICCL.Picture({ width: 150 })
+    .mapValue("url", "logo");
+const logoBg = new PICCL.Rect({ width: 200, height: 300 })
+    .mapValue("fill", "country");
+const text1 = new PICCL.Text({ fontSize: 30, textAnchor: "middle" })
+    .mapValue("content", "country");
+const colGlyph = PICCL.union([col, logoBg, logo, cup, text1])
+    .lineSnap(logoBg, col, "y", { sourceAnchor: 1, targetAnchor: 0 })
+    .pointSnap(cup, col, { sourceAnchor: [0.5, 0], targetAnchor: [0.5, 1] })
+    .pointSnap(logo, logoBg)
+    .pointSnap(text1, logoBg, { anchor: [0.5, 0], offset: [0, -50] });
+const chart = PICCL.replicate(colGlyph)
+    .stackLayout("x", 0);
+const titleColor = "rgb(15,92,86)";
+const title = new PICCL.Text({ x: 300, y: 900, content: "REACHED the STARS", fontSize: 130, fill: titleColor });
+const title2 = new PICCL.Text({ x: 300, y: 800, content: "THESE ARE THE FIFA WORLD CUP WON BY COUNTRY", fontSize: 50, fill: titleColor });
+await PICCL.show([
+    [chart, data["data.csv"]],
+    title,
+    title2,
+    // objects to show
+], container, { pictures, background: "rgb(235,235,227)" });

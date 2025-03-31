@@ -1,0 +1,24 @@
+const bar = new PICCL.Rect({ width: 80, height: 600, fill: "grey" })
+    .mapValue("height", "percentageOver60")
+    .mapValue("x", "country")
+    .mapValue("fill", "country")
+const label = new PICCL.Text({ fontSize: 30, textAnchor: "middle" })
+    .mapValue("content", "percentageOver60")
+const glyph = PICCL.union([bar, label])
+    .pointSnap(label, bar, { anchor: [0.5, 1], offset: [0, 10] })
+const collection = PICCL.replicate(glyph)
+
+const picture = new PICCL.Picture({ url: "ageing_problem.webp", color: "#777", opacity: 0.5 })
+
+const barsWithBackground = PICCL.intersect(collection, picture, "normal", [label])
+    .pointSnap(picture, collection, { anchor: "middle" })
+    .lengthMatch(picture, collection, { channel: "width" })
+
+const xAxis = new PICCL.Axis("x", { showBaseline: false, numberTicks: 17 });
+
+const chart = PICCL.union([barsWithBackground, xAxis])
+
+const title = new PICCL.Text({ content: "The ageing Problem", fontSize: 40, y: 700, fontWeight: "bold" })
+const subtitle = new PICCL.Text({ content: "Percentage of population over 60, 2007", fontSize: 40, x: 430, y: 700 })
+
+await PICCL.show([[chart, data["ageing_problem.csv"]], title, subtitle], container, { pictures, padding: 50 });

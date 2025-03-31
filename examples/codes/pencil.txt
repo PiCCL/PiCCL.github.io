@@ -1,0 +1,22 @@
+const pencilTop = new PICCL.Picture({ url: "top.png", y: 600 })
+    .mapValue("y", "amount", { anchor: 1 });
+const pencilMiddle = new PICCL.Picture({ url: "middle.png" })
+const pencilBottom = new PICCL.Picture({ url: "bottom.png", width: 100 });
+
+const pencil = PICCL.union([pencilTop, pencilMiddle, pencilBottom])
+    .lengthMatch(pencilTop, pencilBottom, { channel: "width" })
+    .lengthMatch(pencilMiddle, pencilBottom, { channel: "width" })
+    .lineSnap(pencilMiddle, pencilTop, "y", { sourceAnchor: "top", targetAnchor: "bottom" })
+    .lineSnap(pencilMiddle, pencilBottom, "y", { sourceAnchor: "bottom", targetAnchor: "top" })
+    .mapValue("x", "category");
+
+const collection = PICCL.replicate(pencil);
+
+const xAxis = new PICCL.Axis("x", { position: -10 });
+const yAxis = new PICCL.Axis("y", { position: -100 });
+
+const chart = PICCL.union([collection, xAxis, yAxis])
+
+await PICCL.show([
+    [chart, data["data.csv"]]
+], container, { pictures })

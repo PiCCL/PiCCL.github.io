@@ -1,0 +1,73 @@
+const palette = [
+    "rgb(235,207,79)",
+    "rgb(159,115,166)",
+    "rgb(217,129,88)",
+    "rgb(121,178,86)",
+    "rgb(159,205,213)",
+];
+const creatBarChart = () => {
+    const waterDrop = new PICCL.Picture({ url: "water_drop.svg", height: 15 })
+        .mapValue("color", "emotion", { palette });
+    const row = PICCL.repeat(waterDrop, "count")
+        .stackLayout("x", 2);
+    const label = new PICCL.Text({ textAnchor: "end" })
+        .mapValue("content", "day");
+    const rowWithLabel = PICCL.union([row, label])
+        .pointSnap(label, row, { anchor: [0, 0.5], offset: [-10, -4] });
+    const chart = PICCL.replicate(rowWithLabel, "day")
+        .stackLayout("y", 10);
+    return chart;
+};
+const dayRect = new PICCL.Rect({ fill: "white", height: 30, width: 50 })
+    .mapValue("linkId", "name");
+const label = new PICCL.Text({ fill: "#6a473b", fontSize: 30, textAnchor: "middle" })
+    .mapValue("content", "name");
+const glyphDay = PICCL.union([dayRect, label])
+    .pointSnap(label, dayRect, { anchor: [0.5, 0.3] });
+const daysCollection = PICCL.replicate(glyphDay, "name")
+    .stackLayout("x", 120);
+const waterCup = new PICCL.Picture({ url: "cup_of_water.png", width: 90 })
+    .mapValue("linkId", "emotion")
+    .mapValue("color", "emotion");
+const emotionLabel = new PICCL.Text({ fill: "white", fontSize: 20, textAnchor: "middle", fontFamily: "Impact " })
+    .mapValue("content", "emotion");
+const barChart = creatBarChart();
+const glyphEmotion = PICCL.union([waterCup, emotionLabel, barChart])
+    .pointSnap(emotionLabel, waterCup, { anchor: [0.5, 0.3] })
+    .pointSnap(barChart, waterCup, { sourceAnchor: [0.5, 1], targetAnchor: [0.5, 0], offset: [0, -20] });
+const emotionsCollection = PICCL.replicate(glyphEmotion, "emotion")
+    .stackLayout("x", 140);
+const composite = PICCL.union([daysCollection, emotionsCollection])
+    .pointSnap(daysCollection, emotionsCollection, { sourceAnchor: [0.5, 0], targetAnchor: [0.5, 1], offset: [0, 400] });
+const link = PICCL.link(composite, { linkByData: true, srcDirection: "bottom", dstDirection: "top", opacity: 0.4, shape: "bezier", curveness: 300 })
+    .mapValue("linkWidth", "count")
+    .mapValue("fill", "target_id");
+const drop2 = new PICCL.Picture({ url: "drop3.png", height: 70, x: -200, y: 500 })
+    .mapValue("color", "emotion");
+const dropAnchor = new PICCL.Rect({ height: 50, width: 0 })
+    .mapValue("linkId", "emotion");
+const dl = new PICCL.Text({ fill: "white", textAnchor: "middle", fontSize: 24 })
+    .mapValue("content", "emotion");
+const dg = PICCL.union([drop2, dropAnchor, dl])
+    .pointSnap(drop2, dropAnchor)
+    .pointSnap(dl, drop2, { offset: [20, -10] });
+const dropCollection = PICCL.replicate(dg, "emotion")
+    .stackLayout("-y", 70);
+const rectForLink = new PICCL.Rect({ width: 50, height: 0, x: -440, y: 580 })
+    .mapValue("fill", "emotion")
+    .mapValue("linkId", "emotion");
+const rectCollection = PICCL.replicate(rectForLink, "emotion")
+    .stackLayout("-x", -20);
+const left = PICCL.union([rectCollection, dropCollection])
+    .pointSnap(dropCollection, rectCollection, { sourceAnchor: [0, 1], targetAnchor: [1, 0], offset: [100, -100] });
+const link2 = PICCL.link(left, { srcDirection: "bottom", dstDirection: "left", opacity: 0.4, shape: "bezier", curveness: 150 });
+const t1 = new PICCL.Text({ content: "2010", fontSize: 200, fontWeight: "600", fill: "#ddd", x: -600, y: 650 });
+const t2 = new PICCL.Text({ content: "7 EMOTIONAL SCHOOL DAYS", fontSize: 32, fontWeight: "600", fill: "#6a473b", x: -600, y: 600 });
+await PICCL.show([
+    [daysCollection, data["days.csv"]],
+    [emotionsCollection, data["emotions.csv"]],
+    [link, data["links.csv"]],
+    [link2, data["emotions.csv"]],
+    t1,
+    t2,
+], container, { pictures });

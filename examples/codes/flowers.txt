@@ -1,0 +1,20 @@
+const petal = new PICCL.Picture({ url: "petal3.png", height: 200 })
+  .mapValue("height", "OECD_index")
+  .mapValue("color", "OECD_field");
+
+const flower = PICCL.replicate(petal)
+  .circularLayout();
+
+const stem = new PICCL.Picture({ url: "stem.png", height: 800 })
+  .mapValue("height", "avg")
+
+const leaf = new PICCL.Picture({ url: "leaf.png", height: 100 });
+
+const plant = PICCL.union([stem, leaf, flower])
+  .pointSnap(flower, stem, { sourceAnchor: [0.5, 0.5], targetAnchor: [0.5, 1.0] })
+  .pointSnap(stem, leaf, { sourceAnchor: [0.5, 0.0], targetAnchor: [0.4, 0.3] })
+  .mapValue("x", "country");
+
+const collection = PICCL.replicate(plant, "country");
+
+PICCL.show([[collection, data["flower_data.csv"]]], container, {pictures});

@@ -1,0 +1,23 @@
+const circle = new PICCL.Circle({ r: 800, innerRadius: 780 });
+
+const [chart, arc] = PICCL.divide(circle, "angular", { key: "id", sizeEncode: "Total", gap: 0.5 })
+arc.sort("Region")
+    .mapValue("fill", "Region")
+    .mapValue("linkId", "id");
+
+const label = new PICCL.Text({ fill: "white", fontSize: 20 })
+    .mapValue("content", "Name");
+
+PICCL.union([arc, label])
+    .pointSnap(label, arc, { anchor: [0.5, 1], offset: [0.5, 20] })
+    .orientMatch(label, arc, -90);
+
+const link = PICCL.link(chart, { linkByData: true, filter: arc, opacity: 0.5, srcDirection: "inner", dstDirection: "inner", shape: "arc" })
+    .mapValue("linkWidth", "Amount")
+    .mapValue("fill", "Region");
+
+PICCL.show([
+    [link, data["links.csv"]],
+    [chart, data["nodes.csv"]]
+], container, { padding: 250, background: "black" });
+

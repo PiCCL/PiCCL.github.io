@@ -1,0 +1,15 @@
+const tooth = new PICCL.Picture({ url: "tooth.svg", width: 50, height: 150, keepRatio: false })
+  .mapValue("height", "amount", { anchor: 1 })
+  .mapValue("x", "category")
+
+const teeth = PICCL.replicate(tooth)
+  .fix("angle", -12)
+  .fix("width", 310)
+
+const monsterbackground = new PICCL.Picture({ url: "monster_background.png", width: 800 })
+const monsterforeground = new PICCL.Picture({ url: "monster_foreground.png", width: 800 })
+
+const chart = PICCL.union([monsterbackground, teeth, monsterforeground])
+  .pointSnap(teeth, monsterbackground, { sourceAnchor: [0, 0], targetAnchor: [0.19,0.25] })
+
+await PICCL.show([[chart, data["data.csv"]]], container, {pictures})

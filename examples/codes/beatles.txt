@@ -1,0 +1,36 @@
+const bar = new PICCL.Rect({ width: 2 })
+  .mapValue("fill", "writer")
+  .mapValue("height", "peak", { scale: new PICCL.LinearScale({ range: [200, 0] }) })
+  .mapValue("linkId", "name")
+const note = new PICCL.Picture({ url: "note.png", width: 10 })
+  .mapValue("color", "year")
+const glyph = PICCL.union([bar, note])
+  .pointSnap(note, bar, { sourceAnchor: [0.5, 0.5], targetAnchor: [0.5, 1] })
+
+const bars = PICCL.replicate(glyph)
+  .stackLayout("x", 5)
+
+const memberImage = new PICCL.Picture({ colorMode: "darkness", width: 150 })
+  .mapValue("url", "url")
+  .mapValue("color", "name")
+const rectForLink = new PICCL.Rect({ width: 60, height: 0 })
+  .mapValue("linkId", "name")
+
+const memberGlyph = PICCL.union([memberImage, rectForLink])
+  .pointSnap(rectForLink, memberImage, { anchor: [0.5, 1] })
+
+const memberCollection = PICCL.replicate(memberGlyph)
+  .stackLayout("x", 20)
+
+const composite = PICCL.union([bars, memberCollection])
+  .pointSnap(bars, memberCollection, { sourceAnchor: [0.5, 0], targetAnchor: [0.5, 1], offset: [0, 200] })
+
+const link = PICCL.link(composite, { linkByData: true, srcDirection: "bottom",dstDirection: "top", shape: "bezier", curveness: 100 })
+  .mapValue("fill", "target_id")
+
+await PICCL.show([
+    [bars, data["songs.csv"]], 
+    [memberCollection, data["members.csv"]], 
+    [link, data["links.csv"]]
+], container, {pictures, padding: 20 });
+

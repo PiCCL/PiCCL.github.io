@@ -1,0 +1,46 @@
+const palette = [
+    "rgb(244,208,149)",
+    "rgb(132,182,225)",
+    "rgb(158,216,210)",
+    "rgb(243,157,166)",
+    "rgb(180,197,148)",
+    "rgb(244,187,220)",
+];
+const bar = new PICCL.Rect({ width: 100, height: 1200, opacity: 1 })
+    .mapValue("height", "sold")
+    .mapValue("fill", "country", { palette });
+// .shadowEffect(0,0,10)
+const bottom = new PICCL.Rect({ width: 110, height: 20, y: -20, fill: "#333" });
+const flag = new PICCL.Picture({ height: 60 })
+    .mapValue("url", "country")
+    .fix("angle", -90);
+const label1 = new PICCL.Text({ fontSize: 100, fontFamily: "times", suffix: "M", fontWeight: "bold", textAnchor: "end" })
+    .mapValue("content", "sold")
+    .fix("angle", -90);
+const label2 = new PICCL.Text({ fontSize: 50, fontFamily: "Arial" })
+    .mapValue("content", "name")
+    .fix("angle", -90);
+const glyph = PICCL.union([bar, bottom, flag, label1, label2])
+    .pointSnap(label1, bar, { anchor: [1, 1], offset: [-20, 280] })
+    .pointSnap(label2, bar, { anchor: [0.5, 1], offset: [-10, 290] })
+    .pointSnap(flag, bar, { sourceAnchor: [0, 0.5], targetAnchor: [0.5, 0] });
+const collection = PICCL.replicate(glyph)
+    .circularLayout(500, 20, 270);
+const whisky = new PICCL.Picture({ url: "cup.jpg", x: -380, y: -500, height: 1000 })
+    .edgeBlurEffect();
+const title2 = new PICCL.Text({
+    content: "RANKED:",
+    fontSize: 160, fontFamily: "arial", fontWeight: "bold",
+    x: -1000, y: 1900, fill: "rgb(217,167,86)"
+});
+const title = new PICCL.Text({
+    content: "The World's\nBest-Selling\nWhiskies",
+    fontSize: 250, fontFamily: "times", fontWeight: "bold",
+    x: -1000, y: 1600
+});
+await PICCL.show([
+    whisky,
+    [collection, data["data.csv"]],
+    title, title2
+    // objects to show
+], container, { pictures, padding: [300, 300, -400, -400], background: "rgb(245,245,245)" });

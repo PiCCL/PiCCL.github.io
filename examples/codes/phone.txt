@@ -1,0 +1,42 @@
+const width = 800, height = 600;
+const scaleX = new PICCL.CategoricalScale({ range: [0, width] });
+const scaleY = new PICCL.LinearScale({ range: [0, 600] });
+function createArea(channel, fill) {
+    const line = new PICCL.Line({ x2: 0, y2: height, stroke: fill })
+        .mapValue("length", channel, { scale: scaleY })
+        .mapValue("x", "quarter", { scale: scaleX });
+    const collection = PICCL.replicate(line);
+    const link = PICCL.link(collection);
+    return link;
+}
+function createLine(channel, color) {
+    const point = new PICCL.Point({ stroke: color, fill: color, strokeWidth: 4 })
+        .mapValue("y", channel, { scale: scaleY })
+        .mapValue("x", "quarter", { scale: scaleX });
+    const collection = PICCL.replicate(point);
+    const link = PICCL.link(collection, { stroke: color, strokeWidth: 4 });
+    return link;
+}
+const colorNokia = "navy";
+const colorApple = "orange";
+const areaNokia = createArea("nokia", colorNokia);
+const imageNokia = new PICCL.Picture({ url: "nokia-phone.jpg", width: 500, opacity: 0.5 });
+const areaWithPhoneNokia = PICCL.atop(areaNokia, imageNokia, "normal");
+const areaApple = createArea("apple", colorApple);
+const imageApple = new PICCL.Picture({ url: "apple-phone.jpg", width: 800, opacity: 0.5 });
+const areaWithPhoneApple = PICCL.atop(areaApple, imageApple, "normal")
+    .pointSnap(imageApple, areaApple, { sourceAnchor: [0.5, 0.5], targetAnchor: [0.7, 0.6] });
+const difference = PICCL.xor(areaWithPhoneApple, areaWithPhoneNokia);
+const lineNokia = createLine("nokia", colorNokia);
+const lineApple = createLine("apple", colorApple);
+const axisX = new PICCL.Axis("x");
+const axisY = new PICCL.Axis("y", { scale: scaleY });
+const title = new PICCL.Text({ content: "NOKIA VS APPLE", fontSize: 60, fill: "navy", fontFamily: "times", fontWeight: "bold" });
+const title2 = new PICCL.Text({ content: "Smart phones sales (millon units)", fill: "#333", fontSize: 30, fontFamily: "times", fontWeight: "bold" });
+const info = "";
+const chart = PICCL.union([difference, lineNokia, lineApple, axisX, axisY, title, title2])
+    .pointSnap(title, difference, { anchor: [0, 1], offset: [70, -60] })
+    .pointSnap(title2, difference, { anchor: [0, 1], offset: [70, -100] });
+await PICCL.show([
+    [chart, data["data.csv"]]
+], container, { pictures, background: "#eee" });
